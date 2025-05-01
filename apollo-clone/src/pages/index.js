@@ -5,16 +5,19 @@ import DoctorCard from '../components/DoctorCard';
 import Filters from '../components/Filters';
 import Header from '../components/Header';
 
+const baseUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
+
 export default function Home() {
   const [doctors, setDoctors] = useState([]);
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [activeFilters, setActiveFilters] = useState({});
 
+  // Unified API fetch with optional filters
   const fetchDoctors = async (filters = {}, pageNumber = 1, reset = false) => {
-    console.log('Filters applied:', JSON.stringify(filters, null, 2));
+    console.log('Filters applied:', filters);
 
-    let url = `http://localhost:5000/list-doctor-with-filter?page=${pageNumber}&limit=3`;
+    let url = `${baseUrl}/list-doctor-with-filter?page=${pageNumber}&limit=3`;
 
     if (filters.minFee !== undefined && filters.maxFee !== undefined) {
       url += `&minFee=${filters.minFee}&maxFee=${filters.maxFee}`;
@@ -37,7 +40,7 @@ export default function Home() {
       setTotalPages(totalPages);
       setPage(pageNumber);
     } catch (err) {
-      console.error('❌ Error fetching doctors:', err.message);
+      console.error('Error fetching doctors:', err.message);
     }
   };
 
@@ -47,7 +50,7 @@ export default function Home() {
 
   const handleFilterChange = (filters) => {
     setActiveFilters(filters);
-    fetchDoctors(filters, 1, true); // Reset on filter change
+    fetchDoctors(filters, 1, true);
   };
 
   const handleLoadMore = () => {
